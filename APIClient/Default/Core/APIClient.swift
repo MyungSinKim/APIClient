@@ -59,14 +59,22 @@ private extension APIClient {
     }
     
     func decoratedRequest(from request: APIRequest) -> APIRequest {
-        let decoratedRequest: APIRequest
+        var resultedRequest: APIRequest
         if let requestDecorator = requestDecorator {
-            decoratedRequest = requestDecorator.decoratedRequest(from: request)
+            resultedRequest = requestDecorator.decoratedRequest(from: request)
         } else {
-            decoratedRequest = request
+            resultedRequest = request
         }
         
-        return decoratedRequest
+        if resultedRequest.authRequired {
+            assert(credentialsProducer != nil, "You should provide credentialsProducer for requests required authentication")
+            
+            if let credentialsProducer = credentialsProducer {
+                resultedRequest = RequestAdapter(headers: ["token": credentialsProducer.token], request: resultedRequest)
+            }
+        }
+        
+        return resultedRequest
     }
     
     static var recoverableErrors: Set<NetworkError> {

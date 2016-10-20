@@ -11,6 +11,7 @@ public protocol APIRequest {
     var path: String { get }
     var parameters: [String: Any]? { get }
     var method: APIRequestMethod { get }
+    var authRequired: Bool { get }
     var scopes: [String]? { get }
     var headers: [String: String]? { get }
     var multipartFormData: ((MultipartFormDataType) -> Void)? { get }
@@ -77,6 +78,10 @@ public extension APIRequest {
     
     var parameters: [String: Any]? {
         return nil
+    }
+    
+    var authRequired: Bool {
+        return false
     }
 
     var scopes: [String]? {

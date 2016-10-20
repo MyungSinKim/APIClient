@@ -8,29 +8,34 @@
 
 import XCTest
 @testable import APIClient
+import BoltsSwift
+
+
+struct StarRepositoryRequest: SerializeableAPIRequest {
+    
+    let method: APIRequestMethod = .put
+    let path: String
+    
+    let parser = EmptyParser()
+    
+    init(name: String) {
+        path = "user/starred/" + name
+    }
+}
 
 class APIClientTests: XCTestCase {
     
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
-    
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
-    }
-    
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+    func testAuthRequest() {
+        let client = APIClient(requestExecutor: AlamofireRequestExecutor(baseURL: URL(string: "https://api.github.com")!))
+        let request = StarRepositoryRequest(name: "serejahh/UnboxedAlamofire")
+        
+        let exp = expectation(description: "task")
+        
+        client.execute(request: request).continueWith { task in
+            dump(task)
+            exp.fulfill()
         }
+        
+        waitForExpectations(timeout: 1, handler: nil)
     }
-    
 }
